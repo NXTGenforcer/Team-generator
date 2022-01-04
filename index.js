@@ -6,50 +6,7 @@ const cardArr = [];
 const Engineer = require("./lib/Engineer");
 const Manager = require("./lib/Manager");
 const Intern = require("./lib/Intern");
-const teamDiv = ``;
-
-function EngineerInfo() {
-  const icon = `<i class="fa-solid fa-mug-hot fa-lg text-light">Engineer</i>`;
-  return inquirer.prompt([
-    {
-      type: "input",
-      name: "github",
-      question: "What is the engineer's Github username?",
-    },
-  ]);
-}
-
-function ManagerInfo() {
-  const icon = `<i class="fa-solid fa-mug-hot fa-lg text-light">Manager</i>`;
-  return inquirer.prompt([
-    {
-      type: "input",
-      name: "officeNum",
-      question: "What is the Manager's Office number?",
-    },
-  ]);
-}
-
-function InternInfo() {
-  const icon = `<i class="fa-solid fa-user-graduate text-light">Intern</i>`;
-  return inquirer.prompt([
-    {
-      type: "input",
-      name: "school",
-      question: "What is the Intern's school?",
-    },
-  ]);
-}
-
-function newMember() {
-  return inquirer.prompt([
-    {
-      type: "confirm",
-      name: "newMember",
-      question: "Would you like to add another team member?",
-    },
-  ]);
-}
+let teamDiv = ``;
 
 function init() {
   return inquirer
@@ -62,21 +19,23 @@ function init() {
       {
         type: "input",
         name: "name",
-        question: "What is the employee's name?",
+
+        message: "What is the employee's name?",
       },
       {
         type: "input",
         name: "email",
-        question: "What is the employee's email?",
+
+        message: "What is the employee's email?",
       },
       {
         type: "input",
         name: "id",
-        question: "What is the employee's Id number?",
+
+        message: "What is the employee's Id number?",
       },
     ])
     .then(async ({ name, email, id, EmployeeRole }) => {
-      let specificRole = {};
       if (EmployeeRole === "Engineer") {
         const { github } = await EngineerInfo();
         const newEngineer = new Engineer(name, email, id, github);
@@ -90,24 +49,67 @@ function init() {
         const newIntern = new Intern(name, email, id, school);
         teamArr.push(newIntern);
       }
-      const { newMember } = await newMember();
-      if (newMember) {
-        init();
+      const { aMember } = await newMember();
+      if (aMember) {
+        return init();
       }
     })
-    .then(async ({ EmployeeRole }) => {
+    .then(async () => {
       for (let i = 0; i < teamArr.length; i++) {
-        if (EmployeeRole === "Engineer") {
-          engineerCard();
-        } else if (EmployeeRole === "Manager") {
-          managerCard();
+        if (teamArr[i].getRole() === "Engineer") {
+          engineerCard(teamArr[i]);
+        } else if (teamArr[i].getRole() === "Manager") {
+          managerCard(teamArr[i]);
         } else {
-          internCard();
+          internCard(teamArr[i]);
         }
       }
-      teamDiv.push(cardArr.toString());
+      console.log(cardArr);
+      teamDiv = teamDiv.concat(cardArr.join(""));
+      console.log(teamDiv);
+      writeToFile();
     });
 }
+
+function EngineerInfo() {
+  return inquirer.prompt([
+    {
+      type: "input",
+      name: "github",
+      message: "What is the engineer's Github username?",
+    },
+  ]);
+}
+
+function ManagerInfo() {
+  return inquirer.prompt([
+    {
+      type: "input",
+      name: "officeNum",
+      message: "What is the Manager's Office number?",
+    },
+  ]);
+}
+
+function InternInfo() {
+  return inquirer.prompt([
+    {
+      type: "input",
+      name: "school",
+      message: "What is the Intern's school?",
+    },
+  ]);
+}
+
+const newMember = () => {
+  return inquirer.prompt([
+    {
+      type: "confirm",
+      name: "aMember",
+      message: "Would you like to add another team member?",
+    },
+  ]);
+};
 
 function engineerCard({ name, email, id, github }) {
   const engineerCard = `<div class="card engineer-card" style="width: 12rem;">
@@ -154,7 +156,7 @@ function internCard({ name, email, id, school }) {
   cardArr.push(internCard);
 }
 
-function writeToFile() {
+function html() {
   return `<!DOCTYPE html>
   <html lang="en">
   
@@ -165,7 +167,7 @@ function writeToFile() {
       <title>Team builder</title>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/font-awesome.min.css">
   </head>
   
   <body>
@@ -176,6 +178,16 @@ function writeToFile() {
       </ul>
       <div class="container justify-content-evenly row">${teamDiv}</div>
     </body>`;
+}
+
+async function writeToFile() {
+  try {
+    const data = await html();
+    fs.writeFileSync("index.html", data);
+    console.log("Successfully built team HTML file");
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 init();
