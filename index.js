@@ -109,8 +109,8 @@ function engineerCard({ name, email, id, github }) {
       </div>
       <div class="card-body">
           <li class="list-group-item id">ID: ${id}</li>
-          <li class="list-group-item email">Email: ${email}</li>
-          <li class="list-group-item github">Github: ${github}</li>
+          <li class="list-group-item id">Email: <a href="mailto:${email}">${email}</a></li>
+          <li class="list-group-item id">Github: <a href="https://www.github.com/${github}">${github}</a></li>
       </div>
   </div>`;
   cardArr.push(engineerCard);
@@ -124,7 +124,7 @@ function managerCard({ name, email, id, officeNumber }) {
       </div>
       <div class="card-body">
           <li class="list-group-item id">ID: ${id}</li>
-          <li class="list-group-item email">Email: ${email}</li>
+          <li class="list-group-item id">Email: <a href="mailto:${email}">${email}</a></li>
           <li class="list-group-item office-num">Office Number: ${officeNumber}</li>
       </div>
   </div>`;
@@ -139,7 +139,7 @@ function internCard({ name, email, id, school }) {
       </div>
       <div class="card-body">
           <li class="list-group-item id">ID: ${id}</li>
-          <li class="list-group-item email">Email: ${email}</li>
+          <li class="list-group-item id">Email: <a href="mailto:${email}">${email}</a></li>
           <li class="list-group-item school">School: ${school}</li>
       </div>
   </div>`;
